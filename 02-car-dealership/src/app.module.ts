@@ -7,5 +7,6 @@ import { CarsModule } from './cars/cars.module';
   imports: [CarsModule],
   controllers: [AppController],
   providers: [AppService],
+  exports: [],
 })
 export class AppModule {}

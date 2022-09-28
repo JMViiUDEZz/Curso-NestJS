@@ -18,6 +18,11 @@ export const pokemonIds = [1,20,30,40];
         id: 4,
         name: 'charmander',
         age: 1
-}
+    }
+    // console.log(bulbasaur);
 
-    console.log(bulbasaur);
+    export const pokemons:Pokemon[] = [];
+
+    pokemons.push( charmander , bulbasaur );
+
+    console.log(pokemons);

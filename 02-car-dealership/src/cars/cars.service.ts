@@ -27,11 +27,16 @@ export class CarsService {
 
 
     findAll() {
+        // console.log(this.cars);
+        //llamada asincrona a la BD 
+        //select * from cars
         return this.cars;
     }
 
     findOneById( id: string ) {
-        
+        //select car.* from cars where car.id = ${id}
+        // console.log (id);
+
         const car = this.cars.find( car => car.id === id );
         if ( !car ) throw new NotFoundException(`Car with id '${ id }' not found`);
         
@@ -43,6 +48,8 @@ export class CarsService {
         const car: Car = {
             id: uuid(),
             ...createCarDto
+            // brand: carDTO.brand,
+            // model: carDTO.model
         }
 
         this.cars.push( car );
@@ -53,26 +60,33 @@ export class CarsService {
     update( id: string, updateCarDto: UpdateCarDto ) {
 
         let carDB = this.findOneById( id );
-        
+        //map devuelva un array de cars
         if( updateCarDto.id && updateCarDto.id !== id )
             throw new BadRequestException(`Car id is not valid inside body`);
 
         this.cars = this.cars.map( car => {
 
             if ( car.id === id ) {
-                carDB = { ...carDB,...updateCarDto, id }
-                return carDB;
+                carDB = { ...carDB, //todos los campos de la BD
+                    ...updateCarDto, //se sobreescriben con los campos de la Request
+                     id }
+                return carDB; //el car modificado
             }
 
-            return car;
+            return car; //el mismo car
         })
-        
+        //devolvamos el carDB actualizado
         return carDB;
     }
 
     delete( id: string ) {
         const car = this.findOneById( id );
+        //con filter recorremos el array y devolvemos todos los coches
+        //con id <> al que deseo eliminar
         this.cars = this.cars.filter( car => car.id !== id );
+        // this.cars = this.cars.filter(car => {
+        //     if (car.id != id)
+        //         return car
+        // } 
     }
-
 }

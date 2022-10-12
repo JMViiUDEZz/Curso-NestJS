@@ -4,24 +4,28 @@ import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 
 @Controller('cars')
+// @UsePipes( ValidationPipe )
 export class CarsController {
   
   constructor(
     private readonly carsService: CarsService
   ) {}
 
-  @Get()
-  getAllCars() {
+  @Get() //endpoint http://localhost:3000/cars
+  getAllCars() { //accion
     return this.carsService.findAll()
   }
 
-  @Get(':id')
-  getCarById( @Param('id', ParseUUIDPipe ) id: string ) {
-    return this.carsService.findOneById( id );
+  @Get(':id') //endpoint http://localhost:3000/cars/3
+  //@Get(':id/:name/:edad') varios parámetros en la url
+  getCarById( @Param('id', ParseUUIDPipe ) id: string ) { //accion
+    return this.carsService.findOneById( id ); //Number(id)
+    // console.log (id);
   }
 
   @Post()
   createCar( @Body() createCardDto: CreateCarDto ) {
+    // dataCreateDTO.brand = 'volvo';
     return this.carsService.create( createCardDto );
   }
 

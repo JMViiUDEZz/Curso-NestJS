@@ -8,6 +8,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
+      //solo deja los campos de la data
       whitelist: true,
       forbidNonWhitelisted: true,
     })

@@ -1,8 +1,8 @@
 import { IsString } from "class-validator";
 
 export class CreateCarDto {
-
-    @IsString()
+    //todos los campos obligatorios a la hora de insertar
+    @IsString() //validador
     readonly brand: string;
 
     @IsString()

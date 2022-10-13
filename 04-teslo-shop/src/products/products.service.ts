@@ -34,9 +34,7 @@ export class ProductsService {
       this.handleDBExceptions(error);
     }
 
-
   }
-
 
   findAll( paginationDto: PaginationDto ) {
 
@@ -96,7 +94,6 @@ export class ProductsService {
     await this.productRepository.remove( product );
     
   }
-
 
   private handleDBExceptions( error: any ) {
 

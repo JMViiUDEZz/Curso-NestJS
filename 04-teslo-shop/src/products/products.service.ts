@@ -31,9 +31,7 @@ export class ProductsService {
       return product;
       
     } catch (error) {
-      console.log(error)
-      throw new InternalServerErrorException('Ayuda!')
-      // this.handleDBExceptions(error);
+      this.handleDBExceptions(error);
     }
 
 
@@ -99,15 +97,15 @@ export class ProductsService {
   // }
 
 
-  // private handleDBExceptions( error: any ) {
+  private handleDBExceptions( error: any ) {
 
-  //   if ( error.code === '23505' )
-  //     throw new BadRequestException(error.detail);
+    if ( error.code === '23505' )
+      throw new BadRequestException(error.detail);
     
-  //   this.logger.error(error)
-  //   // console.log(error)
-  //   throw new InternalServerErrorException('Unexpected error, check server logs');
+    this.logger.error(error)
+    // console.log(error)
+    throw new InternalServerErrorException('Unexpected error, check server logs');
 
-  // }
+  }
 
 }

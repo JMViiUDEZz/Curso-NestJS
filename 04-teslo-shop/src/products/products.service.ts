@@ -38,18 +38,20 @@ export class ProductsService {
   }
 
 
-  // findAll( paginationDto: PaginationDto ) {
+  findAll( 
+    // paginationDto: PaginationDto
+     ) {
 
   //   const { limit = 10, offset = 0 } = paginationDto;
 
-  //   return this.productRepository.find({
+    return this.productRepository.find({
   //     take: limit,
   //     skip: offset,
   //     // TODO: relaciones
-  //   })
-  // }
+    })
+  }
 
-  // async findOne( term: string ) {
+  async findOne( id: string ) {
 
   //   let product: Product;
 
@@ -63,13 +65,13 @@ export class ProductsService {
   //         slug: term.toLowerCase(),
   //       }).getOne();
   //   }
+    const product = await this.productRepository.findOneBy({ id });
 
+    if ( !product ) 
+      throw new NotFoundException(`Product with ${ id } not found`);
 
-  //   if ( !product ) 
-  //     throw new NotFoundException(`Product with ${ term } not found`);
-
-  //   return product;
-  // }
+    return product;
+  }
 
   // async update( id: string, updateProductDto: UpdateProductDto ) {
 
@@ -90,11 +92,11 @@ export class ProductsService {
 
   // }
 
-  // async remove(id: string) {
-  //   const product = await this.findOne( id );
-  //   await this.productRepository.remove( product );
+  async remove(id: string) {
+    const product = await this.findOne( id );
+    await this.productRepository.remove( product );
     
-  // }
+  }
 
 
   private handleDBExceptions( error: any ) {

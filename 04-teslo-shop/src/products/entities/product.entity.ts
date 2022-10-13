@@ -40,14 +40,13 @@ export class Product {
     @Column('text')
     gender: string;
 
+    @Column('text', {
+        array: true,
+        default: []
+    })
+    tags: string[];
 
-    // @Column('text', {
-    //     array: true,
-    //     default: []
-    // })
-    // tags: string[];
-
-    // // images
+    // images
 
     @BeforeInsert()
     checkSlugInsert() {

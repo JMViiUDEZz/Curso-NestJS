@@ -24,10 +24,10 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto) {
     
     try {
-
+      //crea la instancia del producto con sus propiedades
       const product = this.productRepository.create(createProductDto);
       await this.productRepository.save( product );
-
+      //lo graba e impacta en la BD
       return product;
       
     } catch (error) {
@@ -39,7 +39,7 @@ export class ProductsService {
   findAll( paginationDto: PaginationDto ) {
 
     const { limit = 10, offset = 0 } = paginationDto;
-
+    //toma desde limit y salta el offest
     return this.productRepository.find({
       take: limit,
       skip: offset,
@@ -47,7 +47,7 @@ export class ProductsService {
     })
   }
 
-  async findOne( term: string ) {
+  async findOne( term: string ) { //term: uuid/slug/title
 
     let product: Product;
 
@@ -71,7 +71,8 @@ export class ProductsService {
   }
 
   async update( id: string, updateProductDto: UpdateProductDto ) {
-
+    //preload busca un objeto de la BD, y se fusiona con la destructuración del dto
+    //se devuelve un objeto resultante de la combinación de propiedades
     const product = await this.productRepository.preload({
       id: id,
       ...updateProductDto

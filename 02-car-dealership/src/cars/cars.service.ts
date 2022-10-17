@@ -4,12 +4,13 @@ import { v4 as uuid } from 'uuid';
 import { CreateCarDto, UpdateCarDto } from './dto';
 import { Car } from './interfaces/car.interface';
 
-@Injectable()
+@Injectable() //se puede inyectar
 export class CarsService {
 
-    private cars: Car[] = [
+    private cars: Car[] = [ //private: la variable solo se puede utilizar en el servicio
         {
-            id: uuid(),
+            id: uuid(), //cada vez que se lance la app, dicha funcion generara un nuevo uuid
+            //en este caso, lo modificamos en la app, pero realmente los datos de la base de datos no cambiarán su id,
             brand: 'Toyota',
             model: 'Corolla' 
         },
@@ -37,8 +38,8 @@ export class CarsService {
         //select car.* from cars where car.id = ${id}
         // console.log (id);
 
-        const car = this.cars.find( car => car.id === id );
-        if ( !car ) throw new NotFoundException(`Car with id '${ id }' not found`);
+        const car = this.cars.find( car => car.id === id ); //coche cuyo id del coche = id que recibo del argumento
+        if ( !car ) throw new NotFoundException(`Car with id '${ id }' not found`); //si el coche no existe, creamos una nueva instancia para lanzar un error personalizado
         
         return car;
     }
@@ -47,7 +48,7 @@ export class CarsService {
 
         const car: Car = {
             id: uuid(),
-            ...createCarDto
+            ...createCarDto //esparce sus propiedades en este nuevo objeto
             // brand: carDTO.brand,
             // model: carDTO.model
         }
@@ -59,10 +60,10 @@ export class CarsService {
 
     update( id: string, updateCarDto: UpdateCarDto ) {
 
-        let carDB = this.findOneById( id );
+        let carDB = this.findOneById( id ); //existe el coche en la BBDD
         //map devuelva un array de cars
-        if( updateCarDto.id && updateCarDto.id !== id )
-            throw new BadRequestException(`Car id is not valid inside body`);
+        if( updateCarDto.id && updateCarDto.id !== id ) //si recibo el id y ese id es diferente al que estoy mandando(coche diferente)
+            throw new BadRequestException(`Car id is not valid inside body`); //lanza una excepcion
 
         this.cars = this.cars.map( car => {
 
@@ -72,18 +73,16 @@ export class CarsService {
                      id }
                 return carDB; //el car modificado
             }
-
             return car; //el mismo car
         })
-        //devolvamos el carDB actualizado
-        return carDB;
+        return carDB; //devolvamos el carDB actualizado
     }
 
     delete( id: string ) {
         const car = this.findOneById( id );
         //con filter recorremos el array y devolvemos todos los coches
         //con id <> al que deseo eliminar
-        this.cars = this.cars.filter( car => car.id !== id );
+        this.cars = this.cars.filter( car => car.id !== id ); //devuelvo todos los coches donde el id no sea igual al id de la request
         // this.cars = this.cars.filter(car => {
         //     if (car.id != id)
         //         return car

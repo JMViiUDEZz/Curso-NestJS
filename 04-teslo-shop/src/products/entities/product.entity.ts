@@ -48,6 +48,7 @@ export class Product {
 
     // images
 
+    //Antes de insertar ejecutamos el método updateSlug()
     @BeforeInsert()
     checkSlugInsert() {
 

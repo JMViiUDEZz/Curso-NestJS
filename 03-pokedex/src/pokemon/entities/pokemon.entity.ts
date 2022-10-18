@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-// Hacemos heredar de Document para que la instancia de mi entidad se comporte como un Documento de una colección
-// Decorador para indicar que es un schema de BD
-@Schema()
+// Hacemos heredar de Document para que la instancia de mi entidad se comporte como un Documento de una colección, o como un registro de una tabla
+
+@Schema() // Decorador para indicar que es un schema de BD
 export class Pokemon extends Document {
 
     // id: string // Mongo me lo da/genera
@@ -10,7 +10,7 @@ export class Pokemon extends Document {
     //nombre del pokemon
     @Prop({ //reglas de negocio del campo name
         unique: true,
-        index: true, // aañadimos un indice para hacer filtros, busquedas
+        index: true, // añadimos un indice para hacer filtros, busquedas
     })
     name: string;
 

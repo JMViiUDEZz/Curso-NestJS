@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class SeedService {
-  //creamos una dependencia de axios en mo proyecto
+  //creamos una dependencia de axios en mi proyecto
   private readonly axios: AxiosInstance = axios;
   
   constructor(
@@ -17,7 +17,7 @@ export class SeedService {
   }
   async executeSeed(){
     await this.pokemonModel.deleteMany({});
-    const { data } = await this.axios.get<PokeResponse>('https://pokeapi.co/api/v2/pokemon?limit=50');
+    const { data } = await this.axios.get<PokeResponse>('https://pokeapi.co/api/v2/pokemon?limit=50'); //traemos la data de este endpoint de tipo PokeResponse(interfaz)
     const insertPromiseArray = [];
     data.results.forEach( async ({name, url}) => {
       // console.log(name, url);

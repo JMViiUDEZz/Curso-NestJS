@@ -10,8 +10,8 @@ import { Pokemon, PokemonSchema } from './entities/pokemon.entity';
   imports: [
     MongooseModule.forFeature([ //indicamos un Modelo
       {
-        name: Pokemon.name, //este name extiende del Document. Nombre entidad
-        schema: PokemonSchema,
+        name: Pokemon.name, //este name es el que se extiende del Document en la entidad. Nombre entidad
+        schema: PokemonSchema, //este schema es el que se ha exportado en la entidad
       },
     ])
   ],

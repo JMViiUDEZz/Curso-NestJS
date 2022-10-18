@@ -13,7 +13,7 @@ import { AxiosAdapter } from '../common/adapters/axios.adapter';
 
 @Injectable()
 export class SeedService {
-  //creamos una dependencia de axios en mo proyecto
+  //creamos una dependencia de axios en mi proyecto
   // private readonly axios: AxiosInstance = axios;
   
   constructor(
@@ -28,7 +28,7 @@ export class SeedService {
   async executeSeed() {
     //borra todos los datos
     await this.pokemonModel.deleteMany(); //delete * from pokemons;
-    // const { data } = await this.axios.get<PokeResponse>('https://pokeapi.co/api/v2/pokemon?limit=50');
+    // const { data } = await this.axios.get<PokeResponse>('https://pokeapi.co/api/v2/pokemon?limit=50'); //traemos la data de este endpoint de tipo PokeResponse(interfaz)
     const data = await this.http.get<PokeResponse>('https://pokeapi.co/api/v2/pokemon?limit=650');
     
     //1ª FORMA (FACIL)

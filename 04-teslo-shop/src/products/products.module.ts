@@ -9,7 +9,7 @@ import { Product } from './entities/product.entity';
   controllers: [ProductsController],
   providers: [ProductsService],
   imports: [
-    TypeOrmModule.forFeature([ Product ])
+    TypeOrmModule.forFeature([ Product ]) //Dentro de forFeature definimos todas las entidades que este modulo esta definiendo (en este caso, Product)
   ]
 })
 export class ProductsModule {}

@@ -12,12 +12,12 @@ import { validate as isUUID } from 'uuid';
 @Injectable()
 export class ProductsService {
 
-  private readonly logger = new Logger('ProductsService');
+  private readonly logger = new Logger('ProductsService'); //creamos una propiedad dentro de la clase
 
   constructor(
 
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    @InjectRepository(Product) //inyectamos nuestra Entidad
+    private readonly productRepository: Repository<Product>, //maneja el repositorio de nuestro producto
 
   ) {}
 
@@ -26,8 +26,8 @@ export class ProductsService {
     try {
       //crea la instancia del producto con sus propiedades
       const product = this.productRepository.create(createProductDto);
+      //lo graba e impacta en la BBDD
       await this.productRepository.save( product );
-      //lo graba e impacta en la BD
       return product;
       
     } catch (error) {
@@ -38,29 +38,32 @@ export class ProductsService {
 
   findAll( paginationDto: PaginationDto ) {
 
-    const { limit = 10, offset = 0 } = paginationDto;
-    //toma desde limit y salta el offest
-    return this.productRepository.find({
-      take: limit,
-      skip: offset,
+    const { limit = 10, offset = 0 } = paginationDto; //valores por defecto que tomarán si no vienen especificados en la consulta
+    //En resumen, toma los productos desde limit y salta el offset
+    return this.productRepository.find({ //regresa todos los productos
+      take: limit, //toma la cantidad de productos que se especifica en limit
+      skip: offset, //saltate la cantidad de productos que se especifica en offset
+      
       // TODO: relaciones
     })
   }
 
-  async findOne( term: string ) { //term: uuid/slug/title
+  async findOne( term: string ) { //(termino de busqueda) term: uuid/slug/title
 
-    let product: Product;
+    let product: Product; //crear producto de tipo Product (Entity)
 
-    if ( isUUID(term) ) {
-      product = await this.productRepository.findOneBy({ id: term });
-    } else {
-      // product = await this.productRepository.findOneBy({ slug: term });
-      const queryBuilder = this.productRepository.createQueryBuilder(); 
+    if ( isUUID(term) ) { //si el termino es un UUID
+      product = await this.productRepository.findOneBy({ id: term }); //lo busca por el UUID,
+    } else { //si no lo es
+      // product = await this.productRepository.findOneBy({ slug: term }); //lo busca por el slug
+      const queryBuilder = this.productRepository.createQueryBuilder(); //con este ultimo metodo ya sabe a que tabla estoy apuntado (Products) y muchas cosas mas de la BDD
+
+      //select * from Products where slug='XX or title=xxxx'
       product = await queryBuilder
-        .where('UPPER(title) =:title or slug =:slug', {
-          title: term.toUpperCase(),
-          slug: term.toLowerCase(),
-        }).getOne();
+        .where('UPPER(title) =:title or slug =:slug', { //argumentos proporcionados (title pasado a mayuscula o slug que como se pasa en minuscula no hace falta pasarlo)al where:
+          title: term.toUpperCase(), //pasamos el termino(title) a mayuscula
+          slug: term.toLowerCase(), //pasamos el termino(slug) a minuscula
+        }).getOne(); //puede ser que regrese 2 productos, por lo que con este metodo solo obtendra 1
     }
     // const product = await this.productRepository.findOneBy({ id });
 
@@ -73,15 +76,15 @@ export class ProductsService {
   async update( id: string, updateProductDto: UpdateProductDto ) {
     //preload busca un objeto de la BD, y se fusiona con la destructuración del dto
     //se devuelve un objeto resultante de la combinación de propiedades
-    const product = await this.productRepository.preload({
-      id: id,
+    const product = await this.productRepository.preload({ //busca el producto por el id y carga todas las propiedades del updateProductDto
+      id: id, 
       ...updateProductDto
     });
 
     if ( !product ) throw new NotFoundException(`Product with id: ${ id } not found`);
 
     try {
-      await this.productRepository.save( product );
+      await this.productRepository.save( product ); //guarda el producto
       return product;
       
     } catch (error) {
@@ -96,11 +99,13 @@ export class ProductsService {
     
   }
 
+  //Hemos creado un metodo privado para este tipo de error, ya que lo vamos a tener en cuenta para eliminar, actualizar, crear, etc.
   private handleDBExceptions( error: any ) {
 
-    if ( error.code === '23505' )
-      throw new BadRequestException(error.detail);
+    if ( error.code === '23505' ) //si el codigo de error es 23505
+      throw new BadRequestException(error.detail); //sera un BadRequestException
     
+    //si no lo es, podremos agregar debajo todos los posibles errores centralizados:
     this.logger.error(error)
     // console.log(error)
     throw new InternalServerErrorException('Unexpected error, check server logs');

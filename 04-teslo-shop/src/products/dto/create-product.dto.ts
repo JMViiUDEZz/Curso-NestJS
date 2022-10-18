@@ -27,11 +27,11 @@ export class CreateProductDto {
     @IsOptional()
     stock?: number; 
 
-    @IsString({ each: true })
+    @IsString({ each: true }) //cada uno de los elementos tienen que ser de tipo string
     @IsArray()
     sizes: string[]
 
-    @IsIn(['men','women','kid','unisex'])
+    @IsIn(['men','women','kid','unisex']) //solo permite que este dentro de esos valores
     gender: string;
 
     @IsString({ each: true })

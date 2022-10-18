@@ -6,13 +6,14 @@ export class PaginationDto {
 
     @IsOptional()
     @IsPositive()
-    //Transformar:
-    @Type( () => Number ) // enableImplicitConversions: true
+    //2ª Forma de Transformar:
+    @Type( () => Number ) // enableImplicitConversions: true (1ª Forma de Transformar vista en el proyecto de pokemons --> 03-pokedex)
     limit?: number;
     
     @IsOptional()
     @Min(0)
-    @Type( () => Number ) // enableImplicitConversions: true
+    //2ª Forma de Transformar:
+    @Type( () => Number ) // enableImplicitConversions: true (1ª Forma de Transformar vista en el proyecto de pokemons --> 03-pokedex)
     offset?: number;
 
 }

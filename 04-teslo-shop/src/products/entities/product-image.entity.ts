@@ -1,4 +1,4 @@
-// import { Product } from './';
+import { Product } from './';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 
@@ -13,11 +13,12 @@ export class ProductImage {
     @Column('text')
     url: string;
 
-    // @ManyToOne(
-    //     () => Product,
-    //     ( product ) => product.images,
-    //     {  onDelete: 'CASCADE' }
-    // )
-    // product: Product
+    @ManyToOne( //MUCHAS imagenes pueden tener 1 producto --> Relacion (n,1)
+     //Conexion con la tabla Product
+        () => Product, //regresa un Product, es decir, regresa la clase que crea la entidad
+        ( product ) => product.images, //el product se relaciona con las product.images de esta tabla (estas tienen que ser del mismo tipo)
+        // {  onDelete: 'CASCADE' }
+    )
+    product: Product
 
 }

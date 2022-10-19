@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductImage } from './';
 
 @Entity() //Entity: Representacion de este objeto en la BBDD
 export class Product { //Product: Tabla
@@ -47,6 +48,16 @@ export class Product { //Product: Tabla
     tags: string[];
 
     // images
+    @OneToMany( //1 producto puede tener MUCHAS imagenes --> Relacion (1,n)
+    //Conexion con la tabla ProductImage
+        () => ProductImage, //regresa un ProductImage, es decir, regresa la clase que crea la entidad
+        (productImage) => productImage.product, //la productImage se relaciona con la productImage.product de esta tabla (estas tienen que ser del mismo tipo)
+        { 
+            cascade: true, //cascade: true --> si elimino un producto, eliminara las imagenes asociadas a este
+            // eager: true 
+        } 
+    )
+    images?: ProductImage[];
 
     //Antes de insertar ejecutamos el método checkSlugInsert()
     @BeforeInsert()

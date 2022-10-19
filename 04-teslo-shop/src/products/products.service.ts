@@ -6,7 +6,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
-import { Product } from './entities/product.entity';
+import { Product, ProductImage } from './entities';
 import { validate as isUUID } from 'uuid';
 
 @Injectable()
@@ -19,16 +19,30 @@ export class ProductsService {
     @InjectRepository(Product) //inyectamos nuestra Entidad
     private readonly productRepository: Repository<Product>, //maneja el repositorio de nuestro producto
 
+    @InjectRepository(ProductImage)
+    private readonly productImageRepository: Repository<ProductImage>,
+
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     
     try {
+      const { images = [], ...productDetails } = createProductDto; //todas las propiedades excepto las imagenes se definiran en el createProductDto
       //crea la instancia del producto con sus propiedades
-      const product = this.productRepository.create(createProductDto);
+      const product = this.productRepository.create({
+        ...productDetails,
+        //images: [] //En este caso, no tenemos ninguna imagen creada. Sin embargo, si tuvieramos alguna, estas tienen que ser instancias de nuestra entidad de ProductImage, como se muestra a continuacion:
+        
+        images: images.map( image => this.productImageRepository.create({ url: image }) ) //creo las instancias de productImageRepository que se encuentran dentro del productRepository y cuando grabe el product, el id que le asigna a cada producto sera el id que tendran las imagenes de los mismos
+        //map: barre un Array y regresa uno nuevo transformado
+      });
       //lo graba e impacta en la BBDD
-      await this.productRepository.save( product );
-      return product;
+      await this.productRepository.save( product ); //salva tanto el producto como las imagenes, ya que estas se encuentran dentro del producto
+      return { ...product, images }; //devolverá las imagenes a la BDD con la misma estructura que tenian en el body de la request: 
+      // "images": [
+      //   "http://image1.jpg",
+      //   "http://image2.jpg"
+      // ]
       
     } catch (error) {
       this.handleDBExceptions(error);
@@ -78,7 +92,8 @@ export class ProductsService {
     //se devuelve un objeto resultante de la combinación de propiedades
     const product = await this.productRepository.preload({ //busca el producto por el id y carga todas las propiedades del updateProductDto
       id: id, 
-      ...updateProductDto
+      ...updateProductDto,
+      images: [],
     });
 
     if ( !product ) throw new NotFoundException(`Product with id: ${ id } not found`);

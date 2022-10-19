@@ -7,7 +7,5 @@ export class CreateCarDto {
     readonly brand: string; //todos suelen ser readonly, para que salga un error si accidentalmente hacemos alguna modificacion
 
     @IsString()
-    readonly model: string; //readonly: impide la modificacion de los datos del parametro al pasar por la api(controlador y servicio) --> Por tanto, solamente valida la data (solo lectura)
-    id: number;
-    
+    readonly model: string; //readonly: impide la modificacion de los datos del parametro al pasar por la api(controlador y servicio) --> Por tanto, solamente valida la data (solo lectura)    
 }

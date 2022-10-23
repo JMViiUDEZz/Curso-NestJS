@@ -54,7 +54,7 @@ export class Product { //Product: Tabla
         (productImage) => productImage.product, //la productImage se relaciona con la productImage.product de esta tabla (estas tienen que ser del mismo tipo)
         { 
             cascade: true, //cascade: true --> si elimino un producto, eliminara las imagenes asociadas a este
-            // eager: true 
+            eager: true //eager: true --> si usamos un metodo find para cargar un producto, automaticamente va a cargar las imagenes
         } 
     )
     images?: ProductImage[];

@@ -50,16 +50,22 @@ export class ProductsService {
 
   }
 
-  findAll( paginationDto: PaginationDto ) {
+  async findAll( paginationDto: PaginationDto ) {
 
     const { limit = 10, offset = 0 } = paginationDto; //valores por defecto que tomarán si no vienen especificados en la consulta
     //En resumen, toma los productos desde limit y salta el offset
-    return this.productRepository.find({ //regresa todos los productos
+    const products = await this.productRepository.find({ //almacena todos los productos en products 
       take: limit, //toma la cantidad de productos que se especifica en limit
       skip: offset, //saltate la cantidad de productos que se especifica en offset
-      
-      // TODO: relaciones
+      relations: { //relaciones que quiero ver/llenar en la request de la tabla de products
+        images: true, //llena las imagenes
+      }
     })
+    //Aplanar las imagenes
+    return products.map( ( product ) => ({ //map: transforma un array en otra cosa
+      ...product,
+      images: product.images.map( img => img.url ) //del img solo regresa el url
+    }))
   }
 
   async findOne( term: string ) { //(termino de busqueda) term: uuid/slug/title
@@ -70,14 +76,18 @@ export class ProductsService {
       product = await this.productRepository.findOneBy({ id: term }); //lo busca por el UUID,
     } else { //si no lo es
       // product = await this.productRepository.findOneBy({ slug: term }); //lo busca por el slug
-      const queryBuilder = this.productRepository.createQueryBuilder(); //con este ultimo metodo ya sabe a que tabla estoy apuntado (Products) y muchas cosas mas de la BDD
+      const queryBuilder = this.productRepository.createQueryBuilder('prod'); //con este ultimo metodo ya sabe a que tabla estoy apuntado (Products) y muchas cosas mas de la BDD
+      //'prod' --> alias de la tabla Products donde se hace el query(consulta)
 
       //select * from Products where slug='XX or title=xxxx'
       product = await queryBuilder
         .where('UPPER(title) =:title or slug =:slug', { //argumentos proporcionados (title pasado a mayuscula o slug que como se pasa en minuscula no hace falta pasarlo)al where:
           title: term.toUpperCase(), //pasamos el termino(title) a mayuscula
           slug: term.toLowerCase(), //pasamos el termino(slug) a minuscula
-        }).getOne(); //puede ser que regrese 2 productos, por lo que con este metodo solo obtendra 1
+        })
+        .leftJoinAndSelect('prod.images', //especificamos la tabla que se va a relacionar
+        'prodImages') //especificamos un alias por si con estas imagenes queremos hacer otro join
+        .getOne(); //puede ser que regrese 2 productos, por lo que con este metodo solo obtendra 1
     }
     // const product = await this.productRepository.findOneBy({ id });
 
@@ -85,6 +95,15 @@ export class ProductsService {
       throw new NotFoundException(`Product with ${ term } not found`);
 
     return product;
+  }
+
+  //Metodo para Aplanar las imagenes
+  async findOnePlain( term: string ) {
+    const { images = [], ...rest } = await this.findOne( term );
+    return {
+      ...rest,
+      images: images.map( image => image.url )
+    }
   }
 
   async update( id: string, updateProductDto: UpdateProductDto ) {

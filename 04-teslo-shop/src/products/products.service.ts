@@ -179,5 +179,20 @@ export class ProductsService {
     throw new InternalServerErrorException('Unexpected error, check server logs');
 
   }
+  //Eliminacion de todos los productos en cascada
+  async deleteAllProducts() {
+    const query = this.productRepository.createQueryBuilder('product');
+
+    try {
+      return await query
+        .delete() //borra todos los registros de la tabla Product en cascada
+        .where({}) //no le mandamos ninguna condiccion, por lo que seleccionamos todos los productos
+        .execute();
+
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+
+  }
 
 }

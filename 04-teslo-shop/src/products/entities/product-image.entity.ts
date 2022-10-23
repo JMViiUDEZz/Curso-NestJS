@@ -17,7 +17,8 @@ export class ProductImage {
      //Conexion con la tabla Product
         () => Product, //regresa un Product, es decir, regresa la clase que crea la entidad
         ( product ) => product.images, //el product se relaciona con las product.images de esta tabla (estas tienen que ser del mismo tipo)
-        // {  onDelete: 'CASCADE' }
+        //Eliminacion en cascada
+        {  onDelete: 'CASCADE' } //cuando el producto se borre, se borrarán las imagenes en cascada
     )
     product: Product
 

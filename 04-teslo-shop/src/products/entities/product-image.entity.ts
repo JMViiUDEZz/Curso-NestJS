@@ -2,9 +2,7 @@ import { Product } from './';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 
-@Entity(
-    // { name: 'product_images' }
-    )
+@Entity({ name: 'product_images' }) //renombrar tabla a 'product_images'
 export class ProductImage {
 
     @PrimaryGeneratedColumn() //id unico: numero que se va autoincrementando

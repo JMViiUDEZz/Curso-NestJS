@@ -1,7 +1,8 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductImage } from './';
 
-@Entity() //Entity: Representacion de este objeto en la BBDD
+@Entity({ name: 'products' }) //Entity: Representacion de este objeto en la BBDD
+//renombrar tabla a 'products'
 export class Product { //Product: Tabla
 
     @PrimaryGeneratedColumn('uuid') //id: Columna

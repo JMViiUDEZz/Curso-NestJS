@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -21,6 +21,8 @@ export class ProductsService {
 
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
+
+    private readonly dataSource: DataSource, //tiene la misma configuracion que productRepository(funciona igual)
 
   ) {}
 
@@ -61,7 +63,7 @@ export class ProductsService {
         images: true, //llena las imagenes
       }
     })
-    //Aplanar las imagenes
+    //Aplanar las imagenes (1ª FORMA)
     return products.map( ( product ) => ({ //map: transforma un array en otra cosa
       ...product,
       images: product.images.map( img => img.url ) //del img solo regresa el url
@@ -97,7 +99,7 @@ export class ProductsService {
     return product;
   }
 
-  //Metodo para Aplanar las imagenes
+  //Metodo para Aplanar las imagenes (2ª FORMA)
   async findOnePlain( term: string ) {
     const { images = [], ...rest } = await this.findOne( term );
     return {
@@ -107,15 +109,22 @@ export class ProductsService {
   }
 
   async update( id: string, updateProductDto: UpdateProductDto ) {
+
+    const { images, ...toUpdate } = updateProductDto; //extraemos las imagenes(pueden venir nulas) y la data a actualizar
+
     //preload busca un objeto de la BD, y se fusiona con la destructuración del dto
     //se devuelve un objeto resultante de la combinación de propiedades
     const product = await this.productRepository.preload({ //busca el producto por el id y carga todas las propiedades del updateProductDto
-      id: id, 
-      ...updateProductDto,
-      images: [],
+      id, ...toUpdate 
     });
 
     if ( !product ) throw new NotFoundException(`Product with id: ${ id } not found`);
+
+    // Si hay Imagenes, tendremos que Borrarlas de una manera controlada:
+    // Create query runner
+    const queryRunner = this.dataSource.createQueryRunner();
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
 
     try {
       await this.productRepository.save( product ); //guarda el producto

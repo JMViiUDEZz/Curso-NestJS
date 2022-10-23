@@ -123,15 +123,40 @@ export class ProductsService {
     // Si hay Imagenes, tendremos que Borrarlas de una manera controlada:
     // Create query runner
     const queryRunner = this.dataSource.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
     try {
-      await this.productRepository.save( product ); //guarda el producto
-      return product;
+
+      if( images ) { //si vienen imagenes
+        await queryRunner.manager.delete( //las borramos todas
+          ProductImage //entidad/tabla que va a ser afectada
+          , { product: { id } } //criterio/filtro --> si no lo ponemos, borrara todas las imagenes de la tabla (delete * from ProductImage) ¡CUIDADO!
+          );
+
+        product.images = images.map( //regresa un nuevo array
+          image => this.productImageRepository.create({ url: image }) //crea instancias de mi ProductImage, aunque no las impacta en la BDD
+        )
+      } 
+      // else {
+      //   product.images = await this.productImageRepository.findBy({ product: { id } })
+      // }
+
+      // await this.productRepository.save( product ); //guarda el producto
+      await queryRunner.manager.save( product ); //lo guarda/impacta en la BDD
+
+      await queryRunner.commitTransaction(); //si no hay errores hasta aqui, aplica los cambios
+      await queryRunner.release(); //el queryRunner ya no volvera a funcionar 
+
+      // return product;
+      return this.findOnePlain( id );
       
     } catch (error) {
+
+      await queryRunner.rollbackTransaction(); //si hay errores, NO aplica los cambios
+      await queryRunner.release(); //el queryRunner ya no volvera a funcionar 
       this.handleDBExceptions(error);
+
     }
 
   }

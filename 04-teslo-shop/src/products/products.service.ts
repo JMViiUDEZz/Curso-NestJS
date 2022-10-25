@@ -29,9 +29,11 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto) {
     
     try {
+      //en este caso ... es operador rest. El resto de propiedades caen en productDetails
       const { images = [], ...productDetails } = createProductDto; //todas las propiedades excepto las imagenes se definiran en el createProductDto
       //crea la instancia del producto con sus propiedades
       const product = this.productRepository.create({
+        //en este caso ... es operador spread
         ...productDetails,
         //images: [] //En este caso, no tenemos ninguna imagen creada. Sin embargo, si tuvieramos alguna, estas tienen que ser instancias de nuestra entidad de ProductImage, como se muestra a continuacion:
         
@@ -110,6 +112,8 @@ export class ProductsService {
 
   async update( id: string, updateProductDto: UpdateProductDto ) {
 
+    //preload busca un objeto de la BD, y se fusiona con la destructuración del dto
+    //se devuelve un objeto resultante de la combinación de propiedades
     const { images, ...toUpdate } = updateProductDto; //extraemos las imagenes(pueden venir nulas) y la data a actualizar
 
     //preload busca un objeto de la BD, y se fusiona con la destructuración del dto
@@ -127,18 +131,19 @@ export class ProductsService {
     await queryRunner.startTransaction();
 
     try {
-
+      //si vienen imagenes de la reques (dto) --> las borro de product_images
       if( images ) { //si vienen imagenes
         await queryRunner.manager.delete( //las borramos todas
           ProductImage //entidad/tabla que va a ser afectada
           , { product: { id } } //criterio/filtro --> si no lo ponemos, borrara todas las imagenes de la tabla (delete * from ProductImage) ¡CUIDADO!
           );
-
+        //ponemos las nuevas imagenes que vienen en la request (dto), pero no las guarda
         product.images = images.map( //regresa un nuevo array
           image => this.productImageRepository.create({ url: image }) //crea instancias de mi ProductImage, aunque no las impacta en la BDD
         )
       } 
       // else {
+      //hemos de cargar de product-images las imágenes relacionadas que hubiera
       //   product.images = await this.productImageRepository.findBy({ product: { id } })
       // }
 

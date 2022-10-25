@@ -29,8 +29,9 @@ export class SeedService {
       insertPromises.push( this.productsService.create( product ) ); //espera a que cada una de estas promesas se resuelvan
     });
 
+    //Promise.all espera a que TODAS las promesas del array insertPromises se resuelvan y continúa con la siguiente línea
     await Promise.all( insertPromises ); //ejecuta el array con cada uno de los valores que cada una de estas promesas resuelva
-
+    //obtenemos el resultado de cada promesa --> const resuslts = await Promise.all (insertPromises);
 
     return true;
   }
